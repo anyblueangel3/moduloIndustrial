@@ -22,13 +22,13 @@ public class UnidadesDAO {
     public static final byte EXCLUSAO = 3;
     
     public UnidadesDAO() {
-        bd = BD.getInstance();
         unidade = new Unidades();
     }
     
     public boolean localizar() {
         sql = "select * from unidades where id = ?";
         try {
+            bd = BD.getInstance();
             statement = bd.connection.prepareStatement(sql);
             statement.setString(1, unidade.getId());
             resultSet = statement.executeQuery();
@@ -40,12 +40,15 @@ public class UnidadesDAO {
         } catch(SQLException erro) {
             System.out.println("erro: " + erro.toString() + sql + unidade.getId());
             return false;
+        } finally {
+            BD.getInstance().close();
         }
     }
     
     public String atualizar(int operacao) {
         men = "Operação realizada com sucesso!";
         try {
+            bd = BD.getInstance();
             if(operacao == INCLUSAO) {
                 sql = "insert into unidades values (?, ?, ?)";                
                 statement = bd.connection.prepareStatement(sql);
@@ -71,6 +74,8 @@ public class UnidadesDAO {
             
         } catch (SQLException erro) {
             men = "Falha na operação! " + erro.toString()+" "+sql;
+        } finally {
+            BD.getInstance().close();
         }
         
         return men;
@@ -81,6 +86,7 @@ public class UnidadesDAO {
         ArrayList<Unidades> listaUnidades = new ArrayList<>();
         sql = "SELECT * FROM unidades ORDER BY descricao;";
         try {
+            bd = BD.getInstance();
             statement = bd.connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -92,6 +98,8 @@ public class UnidadesDAO {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao acessar o arquivo!\n" + e);
+        } finally {
+            BD.getInstance().close();
         }
         return listaUnidades;
     }

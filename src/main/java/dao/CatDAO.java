@@ -23,13 +23,13 @@ public class CatDAO {
     public static final byte EXCLUSAO = 3;
 
     public CatDAO() {
-        bd = BD.getInstance();
         categoria = new Categorias();
     }
 
     public boolean localizar() {
         sql = "select * from categorias where id = ?";
         try {
+            bd = BD.getInstance();
             statement = bd.connection.prepareStatement(sql);
             statement.setString(1, categoria.getId());
             resultSet = statement.executeQuery();
@@ -41,12 +41,15 @@ public class CatDAO {
         } catch (SQLException erro) {
             System.out.println("erro: " + erro.toString() + sql + categoria.getId());
             return false;
+        } finally {
+            BD.getInstance().close();
         }
     }
 
     public String atualizar(int operacao) {
         men = "Operação realizada com sucesso!";
         try {
+            bd = BD.getInstance();
             if (operacao == INCLUSAO) {
                 sql = "insert into categorias values (?, ?, ?)";
                 statement = bd.connection.prepareStatement(sql);
@@ -73,6 +76,8 @@ public class CatDAO {
 
         } catch (SQLException erro) {
             men = "Falha na operação! " + erro.toString() + " " + sql;
+        } finally {
+            BD.getInstance().close();
         }
 
         return men;
@@ -82,6 +87,7 @@ public class CatDAO {
         ArrayList<Categorias> listaCategorias = new ArrayList<>();
         sql = "SELECT * FROM categorias ORDER BY descricao;";
         try {
+            bd = BD.getInstance();
             statement = bd.connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -93,6 +99,8 @@ public class CatDAO {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao acessar o arquivo!\n" + e);
+        } finally {
+            BD.getInstance().close();
         }
         return listaCategorias;
     }
