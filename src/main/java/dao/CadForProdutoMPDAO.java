@@ -191,6 +191,21 @@ public class CadForProdutoMPDAO {
         }
         return false;
     }
+    
+    public boolean excluirAssociacao(int id_cadastro) {
+        sql = "DELETE FROM fornec_produtomp WHERE id = ?";
+        try {
+            bd = BD.getInstance();
+            statement = bd.connection.prepareStatement(sql);
+            statement.setInt(1, id_cadastro);
+            statement.executeUpdate();
+            return true;
+        } catch(Exception erro) {
+            return false;
+        } finally {
+            BD.getInstance().close();
+        }
+    }
 }
 
 /*

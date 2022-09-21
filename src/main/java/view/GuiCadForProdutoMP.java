@@ -220,6 +220,23 @@ public class GuiCadForProdutoMP extends JFrame {
                 setBotoes(false, false, true, false, false, true, true);
             }
         });
+        
+        btLocalizar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                if (tfId_fornecedor.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Id do fornecedor não pode estar em branco!");
+                    return;
+                } 
+                
+                if (fornecedorProduto.carregaAssociacao(tfId_produto.getText(),
+                        tfId_fornecedor.getText())) {
+                    carregaTextField();
+                    //novo, localizar, gravar, alterar, excluir, cancelar, sair
+                    setBotoes(true, true, false, true, true, true, true);
+                }
+            }
+        });
 
         btSalvar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -273,6 +290,21 @@ public class GuiCadForProdutoMP extends JFrame {
                 }
                 
             }
+        });
+        
+        btExcluir.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (fornecedorProduto.excluirAssociacao(util.spaceToInt(tfId_cadastro.getText()))) {
+                    JOptionPane.showMessageDialog(null, "Associação excluída com sucesso!");
+                    listarNaTabela();
+                    limpaFormulario();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Problema para excluír associação!");
+                    
+                }
+                //novo, localizar, gravar, alterar, excluir, cancelar, sair
+                setBotoes(true, true, false, false, false, true, true);
+            }                    
         });
 
         btCancelar.addActionListener(new ActionListener() {
