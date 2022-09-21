@@ -16,7 +16,7 @@ public class GuiMenuPrincipal extends JFrame {
     private Container contentPane;
     private JMenuBar mnBarra;
     private static JMenu mnArquivos, mnPedidos, mnConsultas, mnRelatorios;
-    private JMenuItem miSair, miProdutosMP, miForProdutoMP, miUsuarios2;
+    private JMenuItem miSair, miProdutosMP, miUsuarios2;
     private JMenuItem miPedidoClienteMP, miPedidoFornecedorMP,
             miComposicaoProduto, miOrdemProducao;
     private JMenuItem miRelatorioProdutosMP;
@@ -46,7 +46,6 @@ public class GuiMenuPrincipal extends JFrame {
 
         // Arquivos ou Cadastros
         miProdutosMP = new JMenuItem("Cadastro de Produtos Matéria Prima");
-        miForProdutoMP = new JMenuItem("Cadastro de vários Fornecedores de um Produto M.P.");
         miUsuarios2 = new JMenuItem("Cadastro de Usuários do Sistema P.C.P.");
         miSair = new JMenuItem("Sair", new ImageIcon("c:/icones/sair2.jpg"));
         miSair.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -65,7 +64,6 @@ public class GuiMenuPrincipal extends JFrame {
 
         //Menu Cadastros
         mnArquivos.add(miProdutosMP);
-        mnArquivos.add(miForProdutoMP);
         mnArquivos.add(miUsuarios2);
         mnArquivos.add(miSair);
 
@@ -200,7 +198,6 @@ public class GuiMenuPrincipal extends JFrame {
 
     private void travaUsuario(Usuarios2 aUsuario) {
         miProdutosMP.setEnabled(aUsuario.isCadastroProdutosMP());
-        miForProdutoMP.setEnabled(aUsuario.isCadastroForProdutoMP());
         if (aUsuario.getNome().equals("java")) {
             miUsuarios2.setEnabled(true);
         } else {

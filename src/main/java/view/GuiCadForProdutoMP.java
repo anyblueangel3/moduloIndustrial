@@ -191,16 +191,16 @@ public class GuiCadForProdutoMP extends JFrame {
     }
 
     private void definirEventos() {
-        
+
         tfId_fornecedor.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                if(!fornecedorProduto.localizaFornecedor(tfId_fornecedor.getText())) {
+                if (!fornecedorProduto.localizaFornecedor(tfId_fornecedor.getText())) {
                     JOptionPane.showMessageDialog(null, "Fornecedor não cadastrado! Não pode ser gravado.");
                     tfId_fornecedor.requestFocus();
                     return;
                 } else {
                     tfNome_razao.setText(fornecedorProduto.fornecedor.getNome_razao());
-                }                
+                }
             }
         });
 
@@ -220,42 +220,25 @@ public class GuiCadForProdutoMP extends JFrame {
                 setBotoes(false, false, true, false, false, true, true);
             }
         });
-        
+
         btSalvar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
-                if(tfId_fornecedor.getText().equals("")) {
+
+                if (tfId_fornecedor.getText().equals("")) {
                     JOptionPane.showMessageDialog(null, "Id do fornecedor não pode estar em branco!");
                     tfId_fornecedor.requestFocus();
                     return;
                 }
-                
-                if(fornecedorProduto.isFornecedor(produtoMP.getId(), tfId_fornecedor.getText())) {
+
+                if (fornecedorProduto.isFornecedor(produtoMP.getId(), tfId_fornecedor.getText())) {
                     JOptionPane.showMessageDialog(null, "Já é fornecedor deste produto!");
                     tfId_fornecedor.requestFocus();
                     return;
                 }
-                
-                fornecedorProduto.fornecProdutoMP.setId_produtoMP(tfId_produto.getText());
-                fornecedorProduto.fornecProdutoMP.setId_fornecedor(tfId_fornecedor.getText());
-                fornecedorProduto.fornecProdutoMP.setPreco(util.spaceToDouble(tfPreco.getText()));
-                try {
-                    nova_data = formatoData.parse(tfData_compra.getText());
-                    java.sql.Date sqlData = new java.sql.Date(nova_data.getTime());
-                    fornecedorProduto.fornecProdutoMP.setData_compra(sqlData);
-                } catch (Exception erro) {
-                    JOptionPane.showMessageDialog(null, "Erro ao converter data!\n" + erro);
-                    return;
-                }
-                try {
-                    nova_data = formatoData.parse(tfData_cadastro.getText());
-                    java.sql.Date sqlData = new java.sql.Date(nova_data.getTime());
-                    fornecedorProduto.fornecProdutoMP.setData_cadastro(sqlData);
-                } catch (Exception erro) {
-                    JOptionPane.showMessageDialog(null, "Erro ao converter data!\n" + erro);
-                    return;
-                }
-                if(fornecedorProduto.gravarFornecedor()) {
+
+                carregaFornecProdutoMP();
+
+                if (fornecedorProduto.gravarFornecedor()) {
                     listarNaTabela();
                     limpaFormulario();
                     //novo, localizar, gravar, alterar, excluir, cancelar, sair
@@ -264,6 +247,34 @@ public class GuiCadForProdutoMP extends JFrame {
             }
         });
         
+        btAlterar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+                if (tfId_fornecedor.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Id do fornecedor não pode estar em branco!");
+                    tfId_fornecedor.requestFocus();
+                    return;
+                }
+                
+                if (fornecedorProduto.isOutroFornecedor(util.spaceToInt(tfId_cadastro.getText()),
+                        tfId_produto.getText(), tfId_fornecedor.getText())) {
+                    JOptionPane.showMessageDialog(null, "Fornecedor já associado, não pode alterar!");
+                    return;
+                }
+                
+                carregaFornecProdutoMP();
+                fornecedorProduto.fornecProdutoMP.setId(util.spaceToInt(tfId_cadastro.getText()));
+                
+                if (fornecedorProduto.alterarFornecedor()) {
+                    listarNaTabela();
+                    limpaFormulario();
+                    //novo, localizar, gravar, alterar, excluir, cancelar, sair
+                    setBotoes(true, true, false, false, false, true, true);
+                }
+                
+            }
+        });
+
         btCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 limpaFormulario();
@@ -271,12 +282,15 @@ public class GuiCadForProdutoMP extends JFrame {
                 setBotoes(true, true, false, false, false, true, true);
             }
         });
-        
+
         tabelaFornecedores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 int linha = tabelaFornecedores.getSelectedRow();
+                if (linha < 0) {
+                    return;
+                }
                 tfId_fornecedor.setText(listaFornecedores.get(linha).getId_cgc_cpf());
-                if(fornecedorProduto.carregaAssociacao(tfId_produto.getText(),
+                if (fornecedorProduto.carregaAssociacao(tfId_produto.getText(),
                         tfId_fornecedor.getText())) {
                     carregaTextField();
                     //novo, localizar, gravar, alterar, excluir, cancelar, sair
@@ -310,13 +324,13 @@ public class GuiCadForProdutoMP extends JFrame {
         tfData_compra.setText("");
         tfData_cadastro.setText("");
     }
-    
+
     private void setDatasAgora() {
         nova_data = new Date();
         tfData_compra.setText(formatoData.format(nova_data));
         tfData_cadastro.setText(formatoData.format(nova_data));
     }
-    
+
     //novo, localizar, gravar, alterar, excluir, cancelar, sair
     private void setBotoes(boolean novo, boolean localizar, boolean gravar,
             boolean alterar, boolean excluir, boolean cancelar, boolean sair) {
@@ -328,13 +342,13 @@ public class GuiCadForProdutoMP extends JFrame {
         btCancelar.setEnabled(cancelar);
         btSair.setEnabled(sair);
     }
-    
+
     private void carregaTextField() {
         tfId_cadastro.setText(String.valueOf(fornecedorProduto.fornecProdutoMP.getId()));
         tfId_fornecedor.setText(fornecedorProduto.fornecProdutoMP.getId_fornecedor());
-        if(!fornecedorProduto.localizaFornecedor(tfId_fornecedor.getText())) {
-                    JOptionPane.showMessageDialog(null, "Fornecedor não cadastrado!\n"
-                            + " Chame o administrador do sistema.");
+        if (!fornecedorProduto.localizaFornecedor(tfId_fornecedor.getText())) {
+            JOptionPane.showMessageDialog(null, "Fornecedor não cadastrado!\n"
+                    + " Chame o administrador do sistema.");
         } else {
             tfNome_razao.setText(fornecedorProduto.fornecedor.getNome_razao());
         }
@@ -342,7 +356,29 @@ public class GuiCadForProdutoMP extends JFrame {
         tfData_compra.setText(formatoData.format(fornecedorProduto.fornecProdutoMP.getData_compra()));
         tfData_cadastro.setText(formatoData.format(fornecedorProduto.fornecProdutoMP.getData_cadastro()));
     }
-    
+
+    private void carregaFornecProdutoMP() {
+        fornecedorProduto.fornecProdutoMP.setId_produtoMP(tfId_produto.getText());
+        fornecedorProduto.fornecProdutoMP.setId_fornecedor(tfId_fornecedor.getText());
+        fornecedorProduto.fornecProdutoMP.setPreco(util.spaceToDouble(tfPreco.getText()));
+        try {
+            nova_data = formatoData.parse(tfData_compra.getText());
+            java.sql.Date sqlData = new java.sql.Date(nova_data.getTime());
+            fornecedorProduto.fornecProdutoMP.setData_compra(sqlData);
+        } catch (Exception erro) {
+            JOptionPane.showMessageDialog(null, "Erro ao converter data!\n" + erro);
+            return;
+        }
+        try {
+            nova_data = formatoData.parse(tfData_cadastro.getText());
+            java.sql.Date sqlData = new java.sql.Date(nova_data.getTime());
+            fornecedorProduto.fornecProdutoMP.setData_cadastro(sqlData);
+        } catch (Exception erro) {
+            JOptionPane.showMessageDialog(null, "Erro ao converter data!\n" + erro);
+            return;
+        }
+    }
+
 }
 
 /*
@@ -365,4 +401,4 @@ unidade varchar(10)
 preco_venda double 
 preco_ultima_compra double 
 data_cadastro datetime
-*/
+ */

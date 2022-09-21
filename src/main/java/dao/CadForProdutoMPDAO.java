@@ -117,6 +117,32 @@ public class CadForProdutoMPDAO {
         return true;
     }
     
+    public boolean alterarFornecedor() {
+        sql = "UPDATE fornec_produtomp SET "
+                + "id_fornecedor = ?, "
+                + "preco = ?, "
+                + "data_compra = ?, "
+                + "data_cadastro = ? "
+                + "WHERE id = ?";
+        try {
+            bd = BD.getInstance();
+            statement = bd.connection.prepareStatement(sql);
+            statement.setString(1, fornecProdutoMP.getId_fornecedor());
+            statement.setDouble(2, fornecProdutoMP.getPreco());
+            statement.setDate(3, fornecProdutoMP.getData_compra());
+            statement.setDate(4, fornecProdutoMP.getData_cadastro());
+            statement.setInt(5, fornecProdutoMP.getId());
+            statement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Fornecedor associado com sucesso!");            
+        } catch (Exception erro) {
+            JOptionPane.showMessageDialog(null, "Erro ao alterar associação!\n" + erro);
+            return false;
+        } finally {
+            BD.getInstance().close();
+        }
+        return true;
+    }
+    
     public boolean carregaAssociacao(String id_produtoMP, String id_fornecedor) {
         sql = "SELECT * FROM fornec_produtomp WHERE id_produtoMP = ? "
                 + "AND id_fornecedor = ?";
@@ -133,6 +159,29 @@ public class CadForProdutoMPDAO {
                 fornecProdutoMP.setPreco(resultSet.getDouble(4));
                 fornecProdutoMP.setData_compra(resultSet.getDate(5));
                 fornecProdutoMP.setData_cadastro(resultSet.getDate(6));
+                return true;
+            }
+        } catch (Exception erro) {
+            JOptionPane.showMessageDialog(null, "Erro ao procurar associação!\n" + erro);
+        } finally {
+            BD.getInstance().close();
+        }
+        return false;
+    }
+    
+    public boolean isOutroFornecedor(int id_cadastro, String id_produto, String id_fornecedor) {
+        sql = "SELECT id_fornecedor FROM fornec_produtomp "
+                + "WHERE id_produtoMP = ? "
+                + "AND id_fornecedor = ? "
+                + "AND id != ?";
+        try {
+            bd = BD.getInstance();
+            statement = bd.connection.prepareStatement(sql);
+            statement.setString(1, id_produto);
+            statement.setString(2, id_fornecedor);
+            statement.setInt(3, id_cadastro);
+            resultSet = statement.executeQuery();
+            if(resultSet.next()) {
                 return true;
             }
         } catch (Exception erro) {
