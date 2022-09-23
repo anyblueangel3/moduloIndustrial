@@ -6,6 +6,7 @@ import javax.swing.*;
 import model.Usuarios2;
 import view.GuiCadastroProdutosMP;
 import view.GuiCadastroUsuarios2;
+import view.GuiPedidoClienteMP;
 
 /**
  *
@@ -31,7 +32,7 @@ public class GuiMenuPrincipal extends JFrame {
     }
 
     public void inicializarComponentes() {
-        setTitle("Aplicativo Empresa");
+        setTitle("Aplicativo móduloIndustrial");
         setBounds(0, 0, 1000, 800);
         contentPane = getContentPane();
         mnBarra = new JMenuBar();
@@ -133,11 +134,11 @@ public class GuiMenuPrincipal extends JFrame {
 
         miPedidoClienteMP.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //bloqueiaMenu();
-                //GuiPedidoClienteMP label = new GuiPedidoClienteMP();
-                //contentPane.removeAll();
-                //contentPane.add(label);
-                //contentPane.validate();
+                bloqueiaMenu();
+                GuiPedidoClienteMP label = new GuiPedidoClienteMP();
+                contentPane.removeAll();
+                contentPane.add(label);
+                contentPane.validate();
             }
         });
 

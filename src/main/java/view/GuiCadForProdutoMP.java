@@ -299,8 +299,7 @@ public class GuiCadForProdutoMP extends JFrame {
                     listarNaTabela();
                     limpaFormulario();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Problema para excluír associação!");
-                    
+                    JOptionPane.showMessageDialog(null, "Problema para excluír associação!");    
                 }
                 //novo, localizar, gravar, alterar, excluir, cancelar, sair
                 setBotoes(true, true, false, false, false, true, true);
